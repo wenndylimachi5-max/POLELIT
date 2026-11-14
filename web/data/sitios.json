@@ -1,0 +1,16 @@
+{
+  "anio": 2027,
+  "paso_horas": 1,
+  "horas": 8760,
+  "sitios": [
+    {
+      "id": "cresta",
+      "nombre": "Cresta de conexión",
+      "nombre_en": "Connecting Ridge",
+      "lat": -89.44,
+      "lon": -137.0999,
+      "altura_m": 1958,
+      "grupo": "Polo sur"
+    }
+  ]
+}
