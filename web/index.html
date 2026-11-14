@@ -26,7 +26,7 @@
       </section>
 
       <div id="mapa-3d" class="edu-only">
-        
+
         <canvas id="polo-3d" width="760" height="320" role="img" aria-label="Interactive Lunar South Pole"></canvas>
         <p class="note">Drag to rotate · Bright ridges get sunlight; deep craters stay in permanent shadow.</p>
       </div>
@@ -54,11 +54,38 @@
           <p class="note">Brighter means more of the Sun, or Earth, is in view. Click or drag to jump to a time.</p>
         </div>
       </section>
+        <div class="overview-grid">
+        <section aria-labelledby="h-facts">
 
-      <section class="tech-only" aria-labelledby="h-facts">
-        <h2 id="h-facts">What this site offers</h2>
-        <dl id="facts" class="facts"></dl>
-      </section>
+  <h2 id="h-facts">Whole year 2027</h2>
+  <p class="note">Totals over all 8,760 hours. They change only when you pick another site.</p>
+  <dl id="facts" class="facts"></dl>
+</section>
+
+<section aria-labelledby="h-now">
+  <h2 id="h-now">Selected moment</h2>
+  <p class="note" id="now-when"></p>
+  <dl id="now" class="facts"></dl>
+</section>
+</div>
+<section aria-labelledby="h-day">
+  <h2 id="h-day">Selected day</h2>
+  <label>Pick a day: <input type="date" id="dia" min="2027-01-01" max="2027-12-31"></label>
+  <dl id="day" class="facts"></dl>
+  <details>
+    <summary>Hour by hour (24 h)</summary>
+    <div class="scroll">
+      <table id="hours">
+        <thead><tr><th>Hour (UTC)</th><th>Sun lit</th><th>Sun elevation</th><th>Earth in view</th><th>Earth elevation</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </details>
+  <div class="actions">
+    <button type="button" id="dl-day">Download this day (.txt)</button>
+    <button type="button" id="dl-year">Download full year (.txt)</button>
+  </div>
+</section>
 
       <section class="tech-only" aria-labelledby="h-cmp">
         <h2 id="h-cmp">Compare the sites</h2>

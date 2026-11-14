@@ -112,6 +112,14 @@ def fraccion_sol(el, h):
 
 # Verificación rápida: python calculo\horizonte.py
 if __name__ == "__main__":
+    z, T, crs = _cargar()
+
+    print("Dimensiones:", z.shape)
+    print("CRS:", crs)
+    print("Altura mínima:", np.nanmin(z))
+    print("Altura máxima:", np.nanmax(z))
+    print("Píxeles NaN:", np.isnan(z).sum())
+
     from horizons import efemerides, SOL, TIERRA
     lat, lon = -89.44, -137.0999                # Cresta Shackleton–de Gerlache
     h0, az, hor = horizonte(lat, lon)

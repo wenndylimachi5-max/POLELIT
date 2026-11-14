@@ -129,7 +129,15 @@ canvas{display:block;width:100%}
 
 /* Fichas y tabla */
 .facts{margin:0}
-.facts .row{display:grid;grid-template-columns:minmax(180px,1fr) 2fr;gap:4px 24px;padding:12px 0;border-top:1px solid var(--linea)}
+
+.facts > div {
+  display: grid;
+  grid-template-columns: minmax(140px, 1fr) minmax(0, 1fr);
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--linea);
+  align-items: center;
+}
 .facts dt{color:var(--suave)}
 .facts dd{margin:0}
 .facts b{margin-right:12px;font:600 1.5rem/1.2 Georgia,serif}
@@ -143,11 +151,11 @@ td button{padding:0;border:0;background:none;color:var(--texto);font-weight:600;
 main{padding-bottom:56px}
 
 @media (max-width:700px){
-  .facts .row,.controls,.goal-grid{grid-template-columns:1fr}
+  .facts >div,.controls,.goal-grid{grid-template-columns:1fr}
   .mission-brief{padding:20px}
 }
 [hidden]{display:none !important}
-intro-hero {
+.intro-hero {
   margin: 40px 0 32px;
   padding-bottom: 28px;
   border-bottom: 1px solid var(--linea);
@@ -193,4 +201,23 @@ body[data-mode="tech"] .panel {
 
 body[data-mode="tech"] .read {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+#hours { width: 100%; border-collapse: collapse; margin-top: 10px; }
+#hours th, #hours td { padding: 6px 10px; text-align: left; white-space: nowrap; border-bottom: 1px solid #2a3344; }
+#hours tr.cur td { background: rgba(224, 162, 26, .18); }
+details summary { cursor: pointer; margin: 10px 0; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+
+/* Year overview */
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 700px) {
+  .overview-grid {
+    grid-template-columns: 1fr;
+  }
 }

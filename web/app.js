@@ -126,6 +126,8 @@ function renderHora() {
     solCuenta + " · " + tierraCuenta;
 
   dibujarHorizonte(det, h);
+  renderAhora(det, h);
+  renderDia(det, h);
 }
 
 // 4. Vista desde el módulo (#sky)
@@ -193,23 +195,40 @@ function dibujarFranjasAnuales() {
   }
 }
 
+function resumenDe(det) {
+  var r = det.resumen || {}, t = det.terreno || {};
+  var n = det.sol.frac.length, ambos = 0;
+  for (var i = 0; i < n; i++) {
+    if (det.sol.frac[i] > 0 && det.tierra.visible[i]) ambos++;
+  }
+  return {
+    luz: r.luz_pct,
+    tierra: r.tierra_pct,
+    noche: r.max_oscuridad_h != null ? r.max_oscuridad_h : r.noche_max_h,
+    sinTierra: r.max_sin_tierra_h != null ? r.max_sin_tierra_h : r.sin_tierra_max_h,
+    ambos: r.sol_y_tierra_pct != null ? r.sol_y_tierra_pct : ambos / n * 100,
+    distKm: t.psr_dist_km != null ? t.psr_dist_km
+          : t.dist_sombra_m != null ? t.dist_sombra_m / 1000 : null,
+    pend: t.pendiente_deg
+  };
+}
+
+
 // 6. Lo que ofrece este sitio (#facts)
 function renderFacts() {
   var info = meta.sitios.find(function (s) { return s.id === sitioActualId; });
   var det = sitiosData[sitioActualId];
-  var r = det.resumen || {};
-  var t = det.terreno || {};
-
+  var x = resumenDe(det);
   var datos = [
-    ["Sunlight", r.luz_pct != null ? r.luz_pct.toFixed(1) + "%" : "—"],
-    ["Earth in view", r.tierra_pct != null ? r.tierra_pct.toFixed(1) + "%" : "—"],
-    ["Longest night", r.noche_max_h != null ? r.noche_max_h + " h" : "—"],
-    ["Longest no-Earth", r.sin_tierra_max_h != null ? r.sin_tierra_max_h + " h" : "—"],
-    ["Slope", t.pendiente_deg != null ? t.pendiente_deg.toFixed(1) + "°" : "—"],
-    ["Distance to shadow", t.dist_sombra_m != null ? Math.round(t.dist_sombra_m) + " m" : "—"],
-    ["Elevation", info.altura_m + " m"]
-  ];
-
+  ["Sunlight", x.luz != null ? x.luz.toFixed(1) + "%" : "—"],
+  ["Earth in view", x.tierra != null ? x.tierra.toFixed(1) + "%" : "—"],
+  ["Longest night", x.noche != null ? x.noche + " h" : "—"],
+  ["Longest no-Earth", x.sinTierra != null ? x.sinTierra + " h" : "—"],
+  ["Sun and Earth", x.ambos != null ? x.ambos.toFixed(1) + "%" : "—"],
+  ["Slope", x.pend != null ? x.pend.toFixed(1) + "°" : "—"],
+  ["Distance to shadow", x.distKm != null ? x.distKm.toFixed(2) + " km" : "—"],
+  ["Elevation", info.altura_m + " m"]
+];
   document.getElementById("facts").innerHTML = datos.map(function (d) {
     return "<div><dt>" + d[0] + "</dt><dd>" + d[1] + "</dd></div>";
   }).join("");
@@ -218,19 +237,10 @@ function renderFacts() {
 // 7. Tabla comparativa (#cmp)
 function construirTablaComparativa() {
   var filas = meta.sitios.map(function (s) {
-    var d = sitiosData[s.id];
-    var r = d.resumen || {};
-    var t = d.terreno || {};
-    return {
-      nombre: s.nombre_en,
-      luz: r.luz_pct,
-      noche: r.noche_max_h,
-      tierra: r.tierra_pct,
-      ambos: r.sol_y_tierra_pct,
-      dist: t.dist_sombra_m,
-      pend: t.pendiente_deg
-    };
-  });
+  var x = resumenDe(sitiosData[s.id]);
+  return { nombre: s.nombre_en, luz: x.luz, noche: x.noche, tierra: x.tierra, ambos: x.ambos, dist: x.distKm, pend: x.pend };
+})
+ ;
 
   var maxLuz = Math.max.apply(null, filas.map(function (f) { return f.luz || 0; }));
   var minNoche = Math.min.apply(null, filas.map(function (f) { return f.noche != null ? f.noche : 99999; }));
@@ -246,7 +256,7 @@ function construirTablaComparativa() {
       "<td class='" + (f.noche === minNoche ? "best" : "") + "'>" + (f.noche != null ? f.noche + " h" : "—") + "</td>" +
       "<td class='" + (f.tierra === maxTierra ? "best" : "") + "'>" + (f.tierra != null ? f.tierra.toFixed(1) + "%" : "—") + "</td>" +
       "<td class='" + (f.ambos === maxAmbos ? "best" : "") + "'>" + (f.ambos != null ? f.ambos.toFixed(1) + "%" : "—") + "</td>" +
-      "<td class='" + (f.dist === minDist ? "best" : "") + "'>" + (f.dist != null ? Math.round(f.dist) + " m" : "—") + "</td>" +
+      "<td class='" + (f.dist === minDist ? "best" : "") + "'>" + (f.dist != null ? f.dist.toFixed(2) + " km" : "—") + "</td>" +
       "<td class='" + (f.pend === minPend ? "best" : "") + "'>" + (f.pend != null ? f.pend.toFixed(1) + "°" : "—") + "</td>" +
     "</tr>";
   }).join("");
@@ -292,6 +302,7 @@ function construirTablaComparativa() {
 
   var luna = new THREE.Mesh(geometria, material);
   escena.add(luna);
+  
 
   // Luz solar lateral para modelar los cráteres y el relieve de forma natural
   var luzSolar = new THREE.DirectionalLight(0xfffbeb, 1.7);
@@ -335,3 +346,97 @@ function construirTablaComparativa() {
 
   animar();
 })();
+
+// ===== Hora, día y descarga =====
+function fmtFecha(h) {
+  var f = new Date(Date.UTC(meta.anio || 2027, 0, 1, h, 0, 0));
+  return f.toISOString().replace("T", " ").slice(0, 16) + " UTC";
+}
+function llenarDL(id, pares) {
+  document.getElementById(id).innerHTML = pares.map(function (p) {
+    return "<div><dt>" + p[0] + "</dt><dd>" + p[1] + "</dd></div>";
+  }).join("");
+}
+function enHoras(v) { return v != null ? v + " h" : "not in 2027"; }
+function infoSitio() { return meta.sitios.find(function (s) { return s.id === sitioActualId; }); }
+
+function renderAhora(det, h) {
+  var sol = det.sol.frac[h] > 0, tie = det.tierra.visible[h] > 0;
+  document.getElementById("now-when").textContent = fmtFecha(h);
+  llenarDL("now", [
+    ["Sun", sol ? "Up (" + Math.round(det.sol.frac[h] * 100) + "% visible)" : "In shadow"],
+    ["Sun elevation", det.sol.el[h].toFixed(2) + "°"],
+    [sol ? "Sunset in" : "Sunrise in", enHoras(sol ? det.sol.hasta_puesta[h] : det.sol.hasta_salida[h])],
+    ["Earth", tie ? "In view" : "Hidden"],
+    ["Earth elevation", det.tierra.el[h].toFixed(2) + "°"],
+    [tie ? "Earth hides in" : "Earth appears in", enHoras(tie ? det.tierra.hasta_puesta[h] : det.tierra.hasta_salida[h])]
+  ]);
+}
+
+function renderDia(det, h) {
+  var i0 = h - (h % 24), i1 = Math.min(i0 + 24, det.sol.frac.length);
+  var hs = 0, ht = 0, hb = 0, racha = 0, maxR = 0, filas = "";
+  for (var i = i0; i < i1; i++) {
+    var s = det.sol.frac[i] > 0, t = det.tierra.visible[i] > 0;
+    if (s) hs++;
+    if (t) ht++;
+    if (s && t) hb++;
+    racha = s ? 0 : racha + 1;
+    if (racha > maxR) maxR = racha;
+    filas += "<tr" + (i === h ? " class='cur'" : "") + "><td>" + fmtFecha(i).slice(11, 16) + "</td>" +
+      "<td>" + Math.round(det.sol.frac[i] * 100) + "%</td><td>" + det.sol.el[i].toFixed(2) + "°</td>" +
+      "<td>" + (t ? "Yes" : "No") + "</td><td>" + det.tierra.el[i].toFixed(2) + "°</td></tr>";
+  }
+  var n = i1 - i0;
+  document.getElementById("dia").value = fmtFecha(i0).slice(0, 10);
+  llenarDL("day", [
+    ["Hours with Sun", hs + " of " + n],
+    ["Hours with Earth in view", ht + " of " + n],
+    ["Hours with both", hb + " of " + n],
+    ["Longest darkness that day", maxR + " h"]
+  ]);
+  document.querySelector("#hours tbody").innerHTML = filas;
+}
+
+function pad(v, n) { return String(v).padStart(n); }
+function armarTxt(det, info, desde, hasta) {
+  var x = resumenDe(det), L = [];
+  L.push("POLELIT - hourly data (all times UTC)");
+  L.push("Site: " + info.nombre_en);
+  L.push("Latitude: " + (det.lat != null ? det.lat : info.lat) + "   Longitude: " + (det.lon != null ? det.lon : info.lon) + "   Elevation: " + info.altura_m + " m");
+  L.push("Whole-year summary: sunlight " + x.luz + "%, Earth in view " + x.tierra + "%, longest night " + x.noche + " h, longest without Earth " + x.sinTierra + " h");
+  L.push("");
+  L.push("DATE_TIME_UTC".padEnd(20) + "  " + pad("SUN%", 4) + "  " + pad("SUN_EL", 8) + "  " + pad("SUN_AZ", 7) + "  " + pad("EARTH", 6) + "  " + pad("EARTH_EL", 8) + "  " + pad("EARTH_AZ", 7));
+  for (var i = desde; i < hasta; i++) {
+    L.push(fmtFecha(i) + "  " + pad(Math.round(det.sol.frac[i] * 100), 4) + "  " + pad(det.sol.el[i].toFixed(2), 8) + "  " +
+      pad(det.sol.az[i].toFixed(1), 7) + "  " + pad(det.tierra.visible[i] ? "yes" : "no", 6) + "  " +
+      pad(det.tierra.el[i].toFixed(2), 8) + "  " + pad(det.tierra.az[i].toFixed(1), 7));
+  }
+  return L.join("\r\n");
+}
+function descargarTxt(nombre, texto) {
+  var url = URL.createObjectURL(new Blob([texto], { type: "text/plain;charset=utf-8" }));
+  var a = document.createElement("a");
+  a.href = url; a.download = nombre;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+}
+
+document.getElementById("dl-day").addEventListener("click", function () {
+  var det = sitiosData[sitioActualId], i0 = horaActual - (horaActual % 24);
+  descargarTxt("polelit_" + sitioActualId + "_" + fmtFecha(i0).slice(0, 10) + ".txt",
+    armarTxt(det, infoSitio(), i0, Math.min(i0 + 24, det.sol.frac.length)));
+});
+document.getElementById("dl-year").addEventListener("click", function () {
+  var det = sitiosData[sitioActualId];
+  descargarTxt("polelit_" + sitioActualId + "_" + (meta.anio || 2027) + ".txt",
+    armarTxt(det, infoSitio(), 0, det.sol.frac.length));
+});
+document.getElementById("dia").addEventListener("change", function () {
+  if (!this.value || !meta) return;
+  var p = this.value.split("-").map(Number);
+  var dia = Math.round((Date.UTC(p[0], p[1] - 1, p[2]) - Date.UTC(meta.anio || 2027, 0, 1)) / 86400000);
+  horaActual = Math.max(0, Math.min(meta.horas - 1, dia * 24 + (horaActual % 24)));
+  slider.value = horaActual;
+  renderHora();
+});
