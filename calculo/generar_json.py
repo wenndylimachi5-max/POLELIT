@@ -6,7 +6,8 @@ Para cada sitio de la lista SITIOS:
   2. Obtiene de JPL Horizons la posición del Sol y la Tierra, hora por hora, en el año ANIO (horizons.py).
   3. Calcula en cada hora qué fracción del Sol se ve y si la Tierra está sobre el horizonte.
   4. Calcula cuántas horas faltan para la puesta y la salida del Sol y la Tierra.
-  5. Guarda <id>.json con los resultados y agrega el sitio a sitios.json.
+  5. Calcula pendiente y distancia a la sombra permanente más cercana (terreno.py).
+  6. Guarda <id>.json con los resultados y agrega el sitio a sitios.json.
 
 Uso: python calculo/generar_json.py
 """
@@ -15,6 +16,7 @@ import numpy as np
 from pathlib import Path
 from horizons import efemerides, SOL, TIERRA
 from horizonte import horizonte, fraccion_sol
+from terreno import terreno
 
 ANIO = 2027
 INICIO, FIN = f"{ANIO}-01-01 00:00", f"{ANIO}-12-31 23:00"
@@ -91,7 +93,7 @@ for s in SITIOS:
                      tierra_pct=round(float(vis.mean() * 100), 1),
                      max_oscuridad_h=racha_maxima([not v for v in sol_vis]),
                      max_sin_tierra_h=racha_maxima([not v for v in tie_vis])),
-        terreno=None,   # pendiente y sombra permanente (pendiente de cálculo)
+        terreno=terreno(s["lat"], s["lon"]),   # pendiente (°) y distancia a sombra permanente (km)
     )
 
     # Archivo del sitio (compacto para que pese menos)
@@ -99,9 +101,10 @@ for s in SITIOS:
         json.dump(datos, f, ensure_ascii=False, separators=(",", ":"))
 
     lista.append({k: datos[k] for k in ("id", "nombre", "nombre_en", "lat", "lon", "altura_m")} | {"grupo": s["grupo"]})
-    r = datos["resumen"]
+    r, t = datos["resumen"], datos["terreno"]
     print(f"  altura {datos['altura_m']} m | luz {r['luz_pct']}% | Tierra {r['tierra_pct']}% | "
-          f"noche más larga {r['max_oscuridad_h']} h | sin Tierra máx {r['max_sin_tierra_h']} h")
+          f"noche más larga {r['max_oscuridad_h']} h | sin Tierra máx {r['max_sin_tierra_h']} h | "
+          f"pendiente media {t.get('pendiente_media_deg')}° | sombra a {t.get('psr_dist_km')} km")
 
 # Lista general de sitios
 with open(SALIDA / "sitios.json", "w", encoding="utf-8") as f:
