@@ -1,0 +1,177 @@
+:root{
+  --fondo:#161b22;   /* 👈 Negro suave / gris carbón (antes era #070a10) */
+  --texto:#f0f4f8;   /* Letras principales */
+  --suave:#9ca3af;   /* Subtítulos y notas */
+  --linea:#2d3543;   /* Bordes más visibles sobre el nuevo fondo */
+  --papel:#1f2630;   /* Tarjetas y tabla un tono más claras para despegarse del fondo */
+  --sol:#e0a21a;     /* Dorado solar */
+  --tierra:#3b82f6;  /* Azul Tierra */
+  --cielo:#0b111e;   /* Fondo oscuro de los gráficos (canvas) */
+  --cielo2:#141e33;  
+  --cieloTxt:#cbd5e1;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fondo);color:var(--texto);font:16px/1.55 "Segoe UI",Arial,sans-serif}  
+body[data-mode="edu"] .tech{display:none}
+body[data-mode="tech"] .edu{display:none}
+.top,main{max-width:1100px;margin:0 auto;padding:0 20px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;padding-top:28px}
+h1{margin:0;font:600 clamp(2.4rem,6vw,3.6rem)/1 Georgia,serif;letter-spacing:-.02em}
+h2{margin:32px 0 12px;font:600 1.35rem/1.2 Georgia,serif}
+.tag{margin:6px 0 0;color:var(--suave)}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--tierra);outline-offset:2px}
+.mode{display:flex;border:1px solid var(--texto);border-radius:6px;overflow:hidden}
+.mode button{border:0;background:transparent;color:var(--texto);padding:8px 14px}
+.mode button[aria-pressed="true"]{background:#2f3d57;color:#fff;font-weight:700}
+
+/* Bloque educativo: Dilema y Objetivos */
+.mission-brief {
+  margin: 36px 0 32px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--linea); /* 👈 La línea divisoria de tu boceto */
+  background: transparent; /* 👈 Sin caja de fondo */
+}
+.kicker {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--suave);
+  margin-bottom: 6px;
+}
+.mission-brief h2 {
+  margin: 0 0 10px;
+  font: 600 1.55rem/1.2 Georgia, serif;
+  color: var(--texto);
+}
+.brief-intro {
+  margin: 0 0 20px;
+  max-width: 68ch;
+  color: var(--suave);
+  font-size: 1.02rem;
+  line-height: 1.55;
+}
+.brief-intro strong {
+  color: var(--texto);
+}
+.goal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.goal-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--linea);
+  border-radius: 8px;
+  color: var(--texto);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.goal-card:hover {
+  border-color: #9ba5b7;
+  transform: translateY(-2px);
+}
+.goal-card[aria-pressed="true"] {
+  background: var(--cielo);
+  border-color: var(--cielo);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(14, 22, 38, 0.18);
+}
+.goal-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.05rem;
+  margin-bottom: 4px;
+}
+.goal-sub {
+  font-size: 0.85rem;
+  color: var(--suave);
+}
+.goal-card[aria-pressed="true"] .goal-sub {
+  color: var(--cieloTxt);
+}
+.goal-callout {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: rgba(224, 162, 26, 0.12);
+  border-radius: 8px;
+}
+.goal-callout p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--texto);
+  line-height: 1.45;
+}
+
+/* Navegación de sitios y paneles */
+#sites{display:flex;flex-wrap:wrap;gap:4px 22px;margin-top:8px;border-bottom:1px solid var(--linea)}
+#sites button{background:none;border:0;border-bottom:4px solid transparent;padding:10px 0;color:var(--suave);font-weight:600}
+#sites button[aria-current="true"]{color:var(--texto);border-color:var(--sol)}
+.lede{max-width:62ch;margin:18px 0 0;font:1.2rem/1.45 Georgia,serif}
+.panel{margin-top:20px;padding:4px 20px 20px;border-radius:10px;color:var(--cieloTxt);background:linear-gradient(var(--cielo),var(--cielo2))}
+.panel h2{color:#fff}
+canvas{display:block;width:100%}
+#sky{height:300px}
+#strips{height:112px;cursor:ew-resize}
+.note{margin:8px 0 0;font-size:.85rem;color:#93a0b8}
+.controls{display:grid;grid-template-columns:auto 1fr;gap:10px 14px;align-items:center;margin-top:14px}
+#play{min-width:84px;padding:8px 18px;border:0;border-radius:6px;background:var(--sol);color:var(--texto);font-weight:700}
+#slider{width:100%;accent-color:var(--sol)}
+.read{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:4px 16px;color:#fff}
+.read span{color:var(--cieloTxt)}
+
+/* Fichas y tabla */
+.facts{margin:0}
+.facts .row{display:grid;grid-template-columns:minmax(180px,1fr) 2fr;gap:4px 24px;padding:12px 0;border-top:1px solid var(--linea)}
+.facts dt{color:var(--suave)}
+.facts dd{margin:0}
+.facts b{margin-right:12px;font:600 1.5rem/1.2 Georgia,serif}
+.help{display:block;max-width:60ch;color:var(--suave)}
+.scroll{overflow-x:auto}
+table{width:100%;min-width:640px;border-collapse:collapse;background:var(--papel)}
+th,td{padding:10px 12px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--linea)}
+th{font-weight:600;color:var(--suave)}
+tr.cur td{background:#fbf1d6}
+td button{padding:0;border:0;background:none;color:var(--texto);font-weight:600;text-decoration:underline}
+main{padding-bottom:56px}
+
+@media (max-width:700px){
+  .facts .row,.controls,.goal-grid{grid-template-columns:1fr}
+  .mission-brief{padding:20px}
+}
+[hidden]{display:none !important}
+intro-hero {
+  margin: 40px 0 32px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--linea);
+}
+
+.intro-hero h2 {
+  margin: 0;
+  font: 600 clamp(2.1rem, 4.5vw, 3rem)/1.12 Georgia, serif;
+  letter-spacing: -0.02em;
+  color: #fff;
+  max-width: 22ch;
+}
+#mapa-3d {
+  margin: 24px 0 32px;
+}
+
+#polo-3d {
+  display: block;
+  width: 100%;
+  height: 380px;
+  cursor: grab;
+  border-radius: 12px;
+}
+
+#polo-3d:active {
+  cursor: grabbing;
+}

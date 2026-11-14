@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Polelit - Lunar south pole landing site navigator</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-mode="edu">
+<header class="top">
+  <div>
+    <h1>Polelit</h1>
+    <p class="tag">Landing site navigator for the lunar south pole, year 2027</p>
+  </div>
+  <div class="mode" role="group" aria-label="Reading level">
+    <button type="button" data-mode="edu" aria-pressed="true">Educator view</button>
+    <button type="button" data-mode="tech" aria-pressed="false">Technical view</button>
+  </div>
+</header>
+
+<main>
+    
+    <!--Educator view -->
+    <div id="vista-edu">
+
+    <section class="intro-hero">
+      <h2>Why is it so hard to choose where to land?</h2>
+    </section>
+
+   <div id="mapa-3d">
+ <div id="mapa-3d">
+  <canvas id="polo-3d" role="img" aria-label="Interactive 3D terrain of the Lunar South Pole"></canvas>
+  <p class="note">Drag to rotate · Bright ridges get sunlight; deep craters stay in permanent shadow.</p>
+</div>
+
+  <section class="panel" aria-labelledby="h-sky">
+    <h2 id="h-sky">View from the lander</h2>
+    <canvas id="sky" role="img" aria-label="Horizon panorama with the Sun and Earth at the selected hour"></canvas>
+    <p class="note">The grey ground is the horizon seen from this site, all 360 degrees. Heights are stretched so small hills show up.</p>
+    <div class="controls">
+      <button type="button" id="play">Play</button>
+      <input type="range" id="slider" min="0" value="0" aria-label="Hour of the year">
+      <div class="read">
+        <strong id="when"></strong>
+        <span id="r-edu" class="edu"></span>
+        <span id="r-tech" class="tech"></span>
+      </div>
+    </div>
+    <h2 id="h-year">A year of light and signal</h2>
+    <canvas id="strips" role="img" aria-label="Sunlight and Earth visibility across the year"></canvas>
+    <p class="note">Brighter means more of the Sun, or Earth, is in view. Click or drag to jump to a time.</p>
+  </section>
+
+  
+
+  <section aria-labelledby="h-facts">
+    <h2 id="h-facts">What this site offers</h2>
+    <dl id="facts" class="facts"></dl>
+  </section>
+
+  <section aria-labelledby="h-cmp">
+    <h2 id="h-cmp">Compare the sites</h2>
+    <div class="scroll">
+      <table id="cmp">
+        <thead><tr>
+          <th scope="col">Site</th><th scope="col">Sunlight</th><th scope="col">Longest night</th>
+          <th scope="col">Earth in view</th><th scope="col">Sun and Earth</th>
+          <th scope="col">Distance to shadow</th><th scope="col">Slope</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    </section>
+    </div>
+
+    <p id="vista-tech" hidden>En proceso</p>
+</main>
+
+
+<script src="datos.js"></script> 
+<script src="app.js"></script>
+</body>
+</html>
