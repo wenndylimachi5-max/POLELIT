@@ -20,6 +20,24 @@
       "lon": -156.197,
       "altura_m": 1736,
       "grupo": "Polo sur"
+    },
+    {
+      "id": "degerlache",
+      "nombre": "Borde de de Gerlache",
+      "nombre_en": "de Gerlache Rim",
+      "lat": -88.6639,
+      "lon": -68.3883,
+      "altura_m": 1811,
+      "grupo": "Polo sur"
+    },
+    {
+      "id": "malapert",
+      "nombre": "Macizo Malapert",
+      "nombre_en": "Malapert Massif",
+      "lat": -85.9803,
+      "lon": 1.6342,
+      "altura_m": 5104,
+      "grupo": "Polo sur"
     }
   ]
 }

@@ -28,6 +28,10 @@ SITIOS = [
          lat=-89.44, lon=-137.0999, grupo="Polo sur"),        # Site01 (Connecting ridge)
     dict(id="shackleton", nombre="Borde de Shackleton", nombre_en="Shackleton Rim",
          lat=-89.7804, lon=-156.1970, grupo="Polo sur"),      # Site04 (Shackleton rim)
+    dict(id="degerlache", nombre="Borde de de Gerlache", nombre_en="de Gerlache Rim",
+         lat=-88.6639, lon=-68.3883, grupo="Polo sur"),       # Site11 (de Gerlache rim)
+    dict(id="malapert", nombre="Macizo Malapert", nombre_en="Malapert Massif",
+         lat=-85.9803, lon=1.6342, grupo="Polo sur"),         # Site23 (Malapert massif)
 ]
 
 
@@ -78,15 +82,15 @@ for s in SITIOS:
         inicio=fechas[0], paso_horas=1, horas=len(fechas),
         horizonte=dict(az=az.tolist(), el=[round(float(x), 3) for x in hor]),
         sol=dict(az=[round(x, 3) for x in saz], el=[round(x, 3) for x in sel], frac=frac.tolist(),
-                 hasta_puesta=horas_hasta_cambio(sol_vis),                          # horas hasta que se oculta
-                 hasta_salida=horas_hasta_cambio([not v for v in sol_vis])),        # horas hasta que vuelve a salir
+                 hasta_puesta=horas_hasta_cambio(sol_vis),
+                 hasta_salida=horas_hasta_cambio([not v for v in sol_vis])),
         tierra=dict(az=[round(x, 3) for x in taz], el=[round(x, 3) for x in tel], visible=vis.tolist(),
                     hasta_puesta=horas_hasta_cambio(tie_vis),
                     hasta_salida=horas_hasta_cambio([not v for v in tie_vis])),
         resumen=dict(luz_pct=round(float(frac.mean() * 100), 1),
                      tierra_pct=round(float(vis.mean() * 100), 1),
-                     max_oscuridad_h=racha_maxima([not v for v in sol_vis]),       # noche más larga (h)
-                     max_sin_tierra_h=racha_maxima([not v for v in tie_vis])),     # mayor período sin Tierra (h)
+                     max_oscuridad_h=racha_maxima([not v for v in sol_vis]),
+                     max_sin_tierra_h=racha_maxima([not v for v in tie_vis])),
         terreno=None,   # pendiente y sombra permanente (pendiente de cálculo)
     )
 
