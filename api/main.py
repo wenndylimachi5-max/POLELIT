@@ -8,10 +8,12 @@ the existing web UI and add the scientific metadata block.
 """
 
 import json
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 import time
 from datetime import datetime, timedelta
-from pathlib import Path
 from typing import List, Dict, Any
+from pydantic import BaseModel
 
 import requests
 import numpy as np
@@ -255,12 +257,21 @@ def contexto_mision(sitio: str = Query(...)) -> Dict[str, Any]:
         if not images:
             # fallback curated images about the lunar South Pole
             images = [
-                "https://images.nasa.gov/details-12345",
-                "https://images.nasa.gov/details-67890",
-                "https://images.nasa.gov/details-abcde",
+                "https://images.nasa.gov/details/PIA12191",
+                "https://images.nasa.gov/details/PIA15685",
+                "https://images.nasa.gov/details/PIA13517",
             ]
     except Exception:
-        images = []
+        images = [
+            "https://images.nasa.gov/details-12345",
+            "https://images.nasa.gov/details-67890",
+            "https://images.nasa.gov/details-abcde",
+        ]
     result = {"flamadas_solares": flares, "imagenes_nasa": images}
     cache.save(cache_key, {"_ts": time.time(), "data": result})
-    return result
+    # -------------------------------------------------
+# Mount static frontend (web/) at root URL
+# -------------------------------------------------
+web_dir = Path(__file__).resolve().parent.parent / "web"
+if web_dir.is_dir():
+    app.mount("/", StaticFiles(directory=str(web_dir), html=True), name="web")
