@@ -137,6 +137,7 @@ function renderHora() {
     solCuenta + " · " + tierraCuenta;
 
   dibujarHorizonte(det, h);
+  dibujarFranjasAnuales();
   renderAhora(det, h);
   renderDia(det, h);
 }
@@ -144,66 +145,62 @@ function renderHora() {
 // 4. Vista desde el módulo (#sky)
 function dibujarHorizonte(det, h) {
   var c = document.getElementById("sky");
-  if (!c.width) { c.width = 860; c.height = 220; }
+  c.width = c.clientWidth;
+  c.height = c.clientHeight;
   var ctx = c.getContext("2d");
   var W = c.width, H = c.height;
 
-  ctx.clearRect(0, 0, W, H);
   ctx.fillStyle = "#090d16";
   ctx.fillRect(0, 0, W, H);
 
-  var minEl = -10, maxEl = 25;
-  function yDeEl(el) {
-    return H - ((el - minEl) / (maxEl - minEl)) * H;
-  }
+  var minEl = -5, maxEl = 5;
+  function x(az) { return (az / 360) * W; }
+  function y(el) { return H - ((el - minEl) / (maxEl - minEl)) * H; }
 
-  // Sol
-  var sx = (det.sol.az[h] / 360) * W;
-  var sy = yDeEl(det.sol.el[h]);
   ctx.fillStyle = det.sol.frac[h] > 0 ? "#fde047" : "rgba(253,224,71,0.25)";
-  ctx.beginPath(); ctx.arc(sx, sy, 10, 0, Math.PI * 2); ctx.fill();
-
-  // Tierra
-  var ex = (det.tierra.az[h] / 360) * W;
-  var ey = yDeEl(det.tierra.el[h]);
+  ctx.beginPath(); ctx.arc(x(det.sol.az[h]), y(det.sol.el[h]), 10, 0, Math.PI * 2); ctx.fill();
   ctx.fillStyle = det.tierra.visible[h] ? "#38bdf8" : "rgba(56,189,248,0.25)";
-  ctx.beginPath(); ctx.arc(ex, ey, 7, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x(det.tierra.az[h]), y(det.tierra.el[h]), 7, 0, Math.PI * 2); ctx.fill();
 
-  // Horizonte 360°
-  var hor = det.horizonte;
+  var az = det.horizonte.az, el = det.horizonte.el;
   ctx.fillStyle = "#334155";
   ctx.strokeStyle = "#94a3b8";
   ctx.beginPath();
   ctx.moveTo(0, H);
-  for (var i = 0; i < hor.length; i++) {
-    ctx.lineTo((i / (hor.length - 1)) * W, yDeEl(hor[i]));
-  }
+  for (var i = 0; i < el.length; i++) ctx.lineTo(x(az[i]), y(el[i]));
+  ctx.lineTo(W, y(el[0]));
   ctx.lineTo(W, H);
   ctx.closePath();
   ctx.fill();
   ctx.stroke();
+
+  ctx.strokeStyle = "rgba(255,255,255,0.15)";
+  ctx.beginPath(); ctx.moveTo(0, y(0)); ctx.lineTo(W, y(0)); ctx.stroke();
+  ctx.fillStyle = "#94a3b8"; ctx.font = "12px sans-serif";
+  [["N", 0], ["E", 90], ["S", 180], ["W", 270]].forEach(function (p) { ctx.fillText(p[0], x(p[1]) + 4, 14); });
 }
 
 // 5. Franjas anuales (#strips)
 function dibujarFranjasAnuales() {
   var c = document.getElementById("strips");
-  if (!c.width) { c.width = 860; c.height = 80; }
+  c.width = c.clientWidth;
+  c.height = c.clientHeight || 80;
   var ctx = c.getContext("2d");
-  var W = c.width, H = c.height;
+  var W = c.width;
   var det = sitiosData[sitioActualId];
   var n = det.sol.frac.length;
 
-  ctx.clearRect(0, 0, W, H);
+  ctx.clearRect(0, 0, W, c.height);
   for (var i = 0; i < n; i++) {
-    var x = (i / n) * W;
-    var w = Math.ceil(W / n);
+    var xx = (i / n) * W, w = Math.ceil(W / n);
     var f = det.sol.frac[i];
-    ctx.fillStyle = f > 0 ? "rgba(253, 224, 71," + (0.25 + 0.75 * f) + ")" : "#111827";
-    ctx.fillRect(x, 4, w, 32);
-
+    ctx.fillStyle = f > 0 ? "rgba(253,224,71," + (0.25 + 0.75 * f) + ")" : "#111827";
+    ctx.fillRect(xx, 4, w, 32);
     ctx.fillStyle = det.tierra.visible[i] ? "#38bdf8" : "#111827";
-    ctx.fillRect(x, 44, w, 32);
+    ctx.fillRect(xx, 44, w, 32);
   }
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect((horaActual / n) * W - 1, 0, 2, 80);
 }
 
 function resumenDe(det) {
@@ -220,7 +217,7 @@ function resumenDe(det) {
     ambos: r.sol_y_tierra_pct != null ? r.sol_y_tierra_pct : ambos / n * 100,
     distKm: t.psr_dist_km != null ? t.psr_dist_km
           : t.dist_sombra_m != null ? t.dist_sombra_m / 1000 : null,
-    pend: t.pendiente_deg
+    pend: t.pendiente_media_deg
   };
 }
 
@@ -237,7 +234,7 @@ function renderFacts() {
   ["Longest no-Earth", x.sinTierra != null ? x.sinTierra + " h" : "—"],
   ["Sun and Earth", x.ambos != null ? x.ambos.toFixed(1) + "%" : "—"],
   ["Slope", x.pend != null ? x.pend.toFixed(1) + "°" : "—"],
-  ["Distance to shadow", x.distKm != null ? x.distKm.toFixed(2) + " km" : "—"],
+  ["Distance to shadow", x.distKm != null ? Math.round(x.distKm * 1000) + " m" : "—"],
   ["Elevation", info.altura_m + " m"]
 ];
   document.getElementById("facts").innerHTML = datos.map(function (d) {
@@ -267,13 +264,13 @@ function construirTablaComparativa() {
       "<td class='" + (f.noche === minNoche ? "best" : "") + "'>" + (f.noche != null ? f.noche + " h" : "—") + "</td>" +
       "<td class='" + (f.tierra === maxTierra ? "best" : "") + "'>" + (f.tierra != null ? f.tierra.toFixed(1) + "%" : "—") + "</td>" +
       "<td class='" + (f.ambos === maxAmbos ? "best" : "") + "'>" + (f.ambos != null ? f.ambos.toFixed(1) + "%" : "—") + "</td>" +
-      "<td class='" + (f.dist === minDist ? "best" : "") + "'>" + (f.dist != null ? f.dist.toFixed(2) + " km" : "—") + "</td>" +
+      "<td class='" + (f.dist === minDist ? "best" : "") + "'>" + (f.dist != null ? Math.round(f.dist * 1000) + " m" : "—") + "</td>" +
       "<td class='" + (f.pend === minPend ? "best" : "") + "'>" + (f.pend != null ? f.pend.toFixed(1) + "°" : "—") + "</td>" +
     "</tr>";
   }).join("");
 }
 
-// --- Luna 3D real con textura oficial fotorrealista de la NASA ---
+// --- Luna 3D ilustrativa (textura de threejs.org) ---
 (function iniciarLuna3DReal() {
   var canvas = document.getElementById("polo-3d");
   if (!canvas || typeof THREE === "undefined") return;
