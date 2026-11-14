@@ -257,18 +257,19 @@ def contexto_mision(sitio: str = Query(...)) -> Dict[str, Any]:
         if not images:
             # fallback curated images about the lunar South Pole
             images = [
-                "https://images.nasa.gov/details/PIA12191",
-                "https://images.nasa.gov/details/PIA15685",
-                "https://images.nasa.gov/details/PIA13517",
+                "https://images.nasa.gov/details/PIA24439",
+                "https://images.nasa.gov/details/PIA00128",
+                "https://images.nasa.gov/details/GSFC_20171208_Archive_e001353",
             ]
     except Exception:
         images = [
-            "https://images.nasa.gov/details-12345",
-            "https://images.nasa.gov/details-67890",
-            "https://images.nasa.gov/details-abcde",
+            "https://images.nasa.gov/details/GSFC_20171208_Archive_e001989",
+            "https://images.nasa.gov/details/GSFC_20171208_Archive_e001817",
+            "https://images.nasa.gov/details/MAF_20211119_LunarEclipse01",
         ]
     result = {"flamadas_solares": flares, "imagenes_nasa": images}
     cache.save(cache_key, {"_ts": time.time(), "data": result})
+    return result
     # -------------------------------------------------
 # Mount static frontend (web/) at root URL
 # -------------------------------------------------
