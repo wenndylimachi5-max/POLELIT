@@ -1,3 +1,17 @@
 venv312/
-datos/
+ datos/
+ __pycache__/
+ api/.cache/
+ web/datos/
+ *.tif
+ *.TIF
+# Entorno y caches locales
+venv/
 __pycache__/
+*.py[cod]
+datos/
+api/.cache/
+*.tif
+*.TIF
+
+*.pkl
