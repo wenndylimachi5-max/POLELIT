@@ -21,9 +21,12 @@ SALIDA = Path(__file__).resolve().parent.parent / "web" / "data"
 SALIDA.mkdir(parents=True, exist_ok=True)
 
 # Sitios a calcular (lat/lon en grados, lon negativa = oeste)
+# Coordenadas: punto más alto a ≤4 km del centro de cada mapa LOLA de 5 m (Barker 2020), ver centros_5m.py
 SITIOS = [
     dict(id="cresta", nombre="Cresta Shackleton–de Gerlache", nombre_en="Shackleton–de Gerlache Ridge",
-         lat=-89.44, lon=-137.0999, grupo="Polo sur"),
+         lat=-89.44, lon=-137.0999, grupo="Polo sur"),        # Site01 (Connecting ridge)
+    dict(id="shackleton", nombre="Borde de Shackleton", nombre_en="Shackleton Rim",
+         lat=-89.7804, lon=-156.1970, grupo="Polo sur"),      # Site04 (Shackleton rim)
 ]
 
 lista = []
@@ -57,7 +60,7 @@ for s in SITIOS:
         json.dump(datos, f, ensure_ascii=False, separators=(",", ":"))
 
     lista.append({k: datos[k] for k in ("id", "nombre", "nombre_en", "lat", "lon", "altura_m")} | {"grupo": s["grupo"]})
-    print(f"  luz {datos['resumen']['luz_pct']}% | Tierra {datos['resumen']['tierra_pct']}%")
+    print(f"  altura {datos['altura_m']} m | luz {datos['resumen']['luz_pct']}% | Tierra {datos['resumen']['tierra_pct']}%")
 
 # Lista general de sitios
 with open(SALIDA / "sitios.json", "w", encoding="utf-8") as f:

@@ -11,6 +11,15 @@
       "lon": -137.0999,
       "altura_m": 1958,
       "grupo": "Polo sur"
+    },
+    {
+      "id": "shackleton",
+      "nombre": "Borde de Shackleton",
+      "nombre_en": "Shackleton Rim",
+      "lat": -89.7804,
+      "lon": -156.197,
+      "altura_m": 1736,
+      "grupo": "Polo sur"
     }
   ]
 }
