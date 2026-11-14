@@ -221,3 +221,23 @@ details summary { cursor: pointer; margin: 10px 0; }
     grid-template-columns: 1fr;
   }
 }
+
+.technical-map img {
+    display: block;
+    width: 100%;
+    max-width: 850px;
+    height: auto;
+    margin: 20px auto;
+    border-radius: 12px;
+    border: 1px solid var(--linea);
+}
+
+.technical-map img {
+    display: block;
+    width: 100%;
+    max-width: 850px;
+    height: auto;
+    margin: 20px auto;
+    border-radius: 12px;
+    border: 1px solid var(--linea);
+}
