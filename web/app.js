@@ -49,11 +49,22 @@ fetch("data/sitios.json")
 
 function seleccionarSitio(id) {
   sitioActualId = id;
+
   document.querySelectorAll("#site-buttons button").forEach(function (b) {
     b.classList.toggle("active", b.dataset.id === id);
   });
+
+  document.querySelectorAll(".map-site").forEach(function (b) {
+    b.classList.toggle("active", b.dataset.id === id);
+  });
+
   renderTodo();
 }
+document.querySelectorAll(".map-site").forEach(function (b) {
+  b.addEventListener("click", function () {
+    seleccionarSitio(b.dataset.id);
+  });
+});
 
 // 3. Barra de tiempo (8760 horas) y botón Play
 var slider = document.getElementById("slider");
