@@ -175,3 +175,22 @@ intro-hero {
 #polo-3d:active {
   cursor: grabbing;
 }
+
+body[data-mode="edu"] .tech-only,
+body[data-mode="edu"] .tech {
+  display: none !important;
+}
+
+body[data-mode="tech"] .edu-only,
+body[data-mode="tech"] .edu {
+  display: none !important;
+}
+
+/* Estilo de consola técnica al activar Technical view */
+body[data-mode="tech"] .panel {
+  border-color: #38bdf8;
+}
+
+body[data-mode="tech"] .read {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
