@@ -60,7 +60,7 @@ var I18N = {
     win_none: "There is no period with the Sun and the Earth in view at the same time.",
     k1_t: "2 km can change everything", k1_p: "On the rim of Shackleton crater the Sun is visible 85% of the year. Just 2 km inside the crater, it drops to 9%.",
     k2_t: "Moon vs Earth",
-    k2_p: "Here the longest night lasts {d} days. On Earth, a night always lasts less than one day.",
+    k2_p: "Here the longest night lasts {d} days. In Buenos Aires, the longest night of the year lasts about 14 hours.",
     facts_title: "Whole year 2027", facts_note: "Totals over all 8,760 hours. They change only when you pick another site.",
     now_title: "Selected moment", day_title: "Selected day", pick_day: "Pick a day:", hourly: "Hour by hour (24 h)",
     th_hour: "Hour (UTC)", th_sunlit: "Sun lit", th_sunel: "Sun elevation", th_earth: "Earth in view", th_earthel: "Earth elevation",
@@ -89,7 +89,7 @@ var I18N = {
     a5: "Average sunlight on the ridge is 88.2% vs 88.0% published by Gläser et al. (2017), and the longest night on the Shackleton rim is 64 h vs 65 h. Differences remain because we simulate one year (2027) with an 80 m map, while the paper averages 20 years with finer maps.",
     foot_name: "Pole + lit: \"the lit pole\". Team from Buenos Aires, NASA Space Apps Challenge 2026.",
     foot_data: "Data sources", foot_proj: "Project",
-    foot_ai: "Built with the help of AI tools (Claude). Not an official NASA product."
+    foot_ai: "Made with the help of AI tools (Claude and ChatGPT)."
   },
   es: {
     nav_about: "Proyecto", nav_how: "Cómo funciona", nav_sites: "Sitios", nav_nav: "Navegador", nav_faq: "Preguntas",
@@ -139,7 +139,7 @@ var I18N = {
     win_none: "No hay ningún período con el Sol y la Tierra visibles al mismo tiempo.",
     k1_t: "2 km pueden cambiarlo todo", k1_p: "En el borde del cráter Shackleton el Sol se ve el 85 % del año. Solo 2 km más adentro del cráter, baja al 9 %.",
     k2_t: "Luna vs Tierra",
-    k2_p: "Acá la noche más larga dura {d} días. En la Tierra, una noche siempre dura menos de un día.",
+    k2_p: "Acá la noche más larga dura {d} días. En Buenos Aires, la noche más larga del año dura unas 14 horas.",
     facts_title: "Año completo 2027", facts_note: "Totales de las 8760 horas. Solo cambian al elegir otro sitio.",
     now_title: "Momento elegido", day_title: "Día elegido", pick_day: "Elegí un día:", hourly: "Hora por hora (24 h)",
     th_hour: "Hora (UTC)", th_sunlit: "Sol visible", th_sunel: "Elevación del Sol", th_earth: "Tierra visible", th_earthel: "Elevación de la Tierra",
@@ -168,7 +168,7 @@ var I18N = {
     a5: "La luz media en la cresta da 88,2 % contra 88,0 % publicado por Gläser et al. (2017), y la noche más larga en el borde de Shackleton da 64 h contra 65 h. Quedan diferencias porque simulamos un año (2027) con un mapa de 80 m, mientras el paper promedia 20 años con mapas más finos.",
     foot_name: "Pole + lit: \"el polo iluminado\". Equipo de Buenos Aires, NASA Space Apps Challenge 2026.",
     foot_data: "Fuentes de datos", foot_proj: "Proyecto",
-    foot_ai: "Hecho con ayuda de herramientas de IA (Claude). No es un producto oficial de NASA."
+    foot_ai: "Hecho con ayuda de herramientas de IA (Claude y ChatGPT)."
   }
 };
 function t(k, vars) {
@@ -536,7 +536,7 @@ function construirTablaComparativa() {
   }).join("");
 }
 
-// ---------- 8. Luna 3D ilustrativa (textura de threejs.org) ----------
+// ---------- 8. Luna 3D ilustrativa (modelo de NASA SVS) ----------
 (function iniciarLuna3D() {
   var canvas = document.getElementById("polo-3d");
   if (!canvas || typeof THREE === "undefined") return;
