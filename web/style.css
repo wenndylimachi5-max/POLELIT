@@ -57,7 +57,12 @@ body[data-mode="tech"] .edu-only, body[data-mode="tech"] .edu{display:none !impo
 /* ===== MenÃº fijo ===== */
 .nav{position:sticky;top:0;z-index:20;backdrop-filter:blur(12px);background:rgba(6,10,26,.72);border-bottom:1px solid var(--linea)}
 .nav-in{max-width:1160px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
-.brand{font-weight:800;font-size:1.25rem;color:#fff;text-decoration:none;letter-spacing:.02em}
+.brand{
+  font-weight:800; font-size:1.3rem; text-decoration:none;
+  text-transform:uppercase; letter-spacing:.16em;
+  background:linear-gradient(90deg,#8cc4ff 0%,#7c6cff 45%,#fbbf24 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
 .nav-links{display:flex;gap:18px;flex:1;flex-wrap:wrap}
 .nav-links a{color:var(--suave);text-decoration:none;font-weight:600;font-size:.95rem}
 .nav-links a:hover{color:#fff}
