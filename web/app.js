@@ -543,17 +543,27 @@ function construirTablaComparativa() {
   var ancho = canvas.clientWidth || 520, alto = canvas.clientHeight || 420;
   var escena = new THREE.Scene();
   var camara = new THREE.PerspectiveCamera(36, ancho / alto, 0.1, 100);
-  camara.position.set(0, -2.4, 1.8);
+  camara.position.set(0, -3.36, 2.52);
   camara.lookAt(0, 0, 0);
   var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
   renderer.setSize(ancho, alto, false);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  var loader = new THREE.TextureLoader();
-  loader.setCrossOrigin("anonymous");
-  var textura = loader.load("https://threejs.org/examples/textures/planets/moon_1024.jpg");
-  var luna = new THREE.Mesh(new THREE.SphereGeometry(1.0, 64, 64),
-    new THREE.MeshStandardMaterial({ map: textura, roughness: 0.9, metalness: 0.05 }));
-  escena.add(luna);
+  
+  renderer.outputEncoding = THREE.sRGBEncoding;   // colores correctos en .glb
+var luna = new THREE.Group();
+escena.add(luna);
+new THREE.GLTFLoader().load("img/moon_small.glb", function (gltf) {
+  var modelo = gltf.scene;
+  var caja = new THREE.Box3().setFromObject(modelo);
+  var tam = caja.getSize(new THREE.Vector3());
+  var centro = caja.getCenter(new THREE.Vector3());
+  var escala = 2 / Math.max(tam.x, tam.y, tam.z);   // que mida 2, como la esfera de antes
+  modelo.scale.setScalar(escala);
+  modelo.position.sub(centro.multiplyScalar(escala)); // centrado en el origen
+  luna.add(modelo);
+}, undefined, function (e) { console.error("No cargó la Luna 3D", e); });
+
+
   var luzSolar = new THREE.DirectionalLight(0xfffbeb, 1.7);
   luzSolar.position.set(3.5, -0.5, 2.0);
   escena.add(luzSolar);
