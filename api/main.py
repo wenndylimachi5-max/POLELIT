@@ -146,7 +146,7 @@ def analizar(
             "tierra_pct": round(float(np.mean(vis_t) * 100), 1),
             "max_oscuridad_h": racha_maxima([not v for v in sol_vis]),
             "max_sin_tierra_h": racha_maxima([not v for v in tie_vis]),
-            "sol_y_tierra_pct": round(float((np.mean(frac) + np.mean(vis_t)) * 50), 1),
+            "sol_y_tierra_pct": round(float(np.mean(np.logical_and(sol_vis, tie_vis)) * 100), 1),
         },
         "terreno": motor.terreno(lat, lon),
         "metadatos_cientificos": {
