@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Polelit - Lunar south pole landing site navigator</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20261115">
 </head>
 <body data-mode="edu">
 
@@ -16,15 +16,15 @@
         <a href="#about" data-i18n="nav_about">About</a>
         <a href="#how" data-i18n="nav_how">How it works</a>
         <a href="#sites" data-i18n="nav_sites">Sites</a>
-        <a href="#navigator" data-i18n="nav_nav">Navigator</a>
+        <a href="#sites" data-i18n="nav_nav">Navigator</a>
         <a href="#faq" data-i18n="nav_faq">FAQ</a>
       </div>
       <div class="nav-tools">
-        <div class="seg" role="group" aria-label="Language">
+        <div class="seg" role="group" data-i18n-aria="header_lang" aria-label="Language">
           <button type="button" data-lang="en" aria-pressed="true">EN</button>
           <button type="button" data-lang="es" aria-pressed="false">ES</button>
         </div>
-        <div class="seg mode" role="group" aria-label="Reading level">
+        <div class="seg mode" role="group" data-i18n-aria="header_level" aria-label="Reading level">
           <button type="button" data-mode="edu" aria-pressed="true" data-i18n="mode_edu">Educator view</button>
           <button type="button" data-mode="tech" aria-pressed="false" data-i18n="mode_tech">Technical view</button>
         </div>
@@ -39,17 +39,17 @@
       <h1 data-i18n-html="hero_title">Find where to <span class="hl">land</span> on the Moon's south pole</h1>
       <p class="lead" data-i18n="hero_lead">See the Sun and the Earth over the real horizon of each landing site, hour by hour in 2027, to judge solar power and direct communication at a glance.</p>
       <div class="hero-btns">
-        <a class="btn primary" href="#navigator" data-i18n="hero_open">Open navigator →</a>
+        <a class="btn primary" href="#sites" data-i18n="hero_open">Open navigator →</a>
         <a class="btn ghost" href="https://github.com/wenndylimachi5-max/POLELIT" target="_blank" rel="noopener" data-i18n="hero_code">View code on GitHub</a>
       </div>
       <div class="stats">
         <div><b>4</b><span data-i18n="stat_sites">south-pole sites</span></div>
-        <div><b>8,760</b><span data-i18n="stat_hours">hours simulated</span></div>
-        <div><b>88.2%</b><span data-i18n="stat_valid">vs 88.0% published</span></div>
+        <div><b data-i18n="stat_hours_value">8,760</b><span data-i18n="stat_hours">hours simulated</span></div>
+        <div><b data-i18n="stat_light_value">88.2%</b><span data-i18n="stat_valid">mean illumination on the ridge (2027)</span></div>
       </div>
     </div>
     <div class="hero-moon">
-      <canvas id="polo-3d" width="520" height="420" role="img" aria-label="Rotating Moon (illustrative)"></canvas>
+      <canvas id="polo-3d" width="520" height="420" role="img" data-i18n-aria="globe_label" aria-label="Rotating Moon (illustrative)"></canvas>
       <p class="note" data-i18n="moon_note">Illustrative image · Drag to rotate</p>
     </div>
   </header>
@@ -64,7 +64,7 @@
       <div class="grid3">
         <div class="card feat"><div class="ico">🏔️</div><h3 data-i18n="f1_t">Real horizon</h3><p data-i18n="f1_p">360° horizon computed from NASA LOLA elevation maps, including the curvature of the Moon. No atmosphere: only terrain blocks the view.</p></div>
         <div class="card feat"><div class="ico">🛰️</div><h3 data-i18n="f2_t">NASA ephemerides</h3><p data-i18n="f2_p">Sun and Earth positions from JPL Horizons, every hour of 2027. Libration is included.</p></div>
-        <div class="card feat"><div class="ico">✔️</div><h3 data-i18n="f3_t">Validated</h3><p data-i18n="f3_p">Average sunlight on the Shackleton–de Gerlache ridge: 88.2% (ours) vs 88.0% (Gläser et al. 2017).</p></div>
+        <div class="card feat"><div class="ico">✔️</div><h3 data-i18n="f3_t">Comparison with published results</h3><p data-i18n="f3_p">Mean solar illumination on the ridge is 88.2% for 2027. Gläser et al. (2017) reported 88.0% over 20 years.</p></div>
       </div>
     </section>
 
@@ -83,10 +83,14 @@
     <section id="sites" class="block">
       <span class="kicker" data-i18n="sites_kicker">Mission planner</span>
       <h2 data-i18n="sites_title">What does your mission need most?</h2>
-      <div class="goal-grid" role="group" aria-label="Mission priority">
-        <button type="button" class="goal-card" data-goal="energy" aria-pressed="true"><span class="goal-top">☀️ <span data-i18n="g_energy">Energy</span></span><span class="goal-sub" data-i18n="g_energy_s">Most sunlight for solar panels</span></button>
-        <button type="button" class="goal-card" data-goal="comm" aria-pressed="false"><span class="goal-top">🌍 <span data-i18n="g_comm">Communication</span></span><span class="goal-sub" data-i18n="g_comm_s">Earth in view most of the time</span></button>
-        <button type="button" class="goal-card" data-goal="both" aria-pressed="false"><span class="goal-top">⚖️ <span data-i18n="g_both">Balanced</span></span><span class="goal-sub" data-i18n="g_both_s">Sun and Earth at the same time</span></button>
+      <div id="data-status" class="data-status">
+        <span id="load-message" role="status">Loading the four sites…</span>
+        <button id="retry-data" class="btn small" type="button" data-i18n="retry" hidden>Try again</button>
+      </div>
+      <div class="goal-grid" role="group" data-i18n-aria="mission_label" aria-label="Mission priority">
+        <button type="button" class="goal-card" disabled data-goal="energy" aria-pressed="true"><span class="goal-top">☀️ <span data-i18n="g_energy">Energy</span></span><span class="goal-sub" data-i18n="g_energy_s">Most sunlight for solar panels</span></button>
+        <button type="button" class="goal-card" disabled data-goal="comm" aria-pressed="false"><span class="goal-top">🌍 <span data-i18n="g_comm">Communication</span></span><span class="goal-sub" data-i18n="g_comm_s">Earth in view most of the time</span></button>
+        <button type="button" class="goal-card" disabled data-goal="both" aria-pressed="false"><span class="goal-top">⚖️ <span data-i18n="g_both">Balanced</span></span><span class="goal-sub" data-i18n="g_both_s">Sun and Earth at the same time</span></button>
       </div>
       <div class="reco" id="reco"></div>
       <div class="site-cards" id="site-cards"></div>
@@ -94,7 +98,7 @@
     </section>
 
     <!-- ===== Navegador ===== -->
-    <section id="navigator" class="block">
+    <section id="navigator" class="block" hidden>
       <span class="kicker" data-i18n="nav_kicker">Navigator</span>
       <h2 id="site-title"></h2>
       <div id="site-buttons" class="site-pills"></div>
@@ -103,11 +107,11 @@
 
       <section class="panel" aria-labelledby="h-sky">
         <h2 id="h-sky" data-i18n="sky_title">View from the lander</h2>
-        <canvas id="sky" role="img" aria-label="Horizon panorama with the Sun and Earth at the selected hour"></canvas>
+        <canvas id="sky" role="img" data-i18n-aria="sky_label" aria-label="Horizon panorama with the Sun and Earth at the selected hour"></canvas>
         <p class="note" data-i18n="sky_note">The grey ground is the horizon seen from this site, all 360 degrees. Heights are stretched so small hills show up.</p>
         <div class="controls">
           <button type="button" id="play" data-i18n="play">Play</button>
-          <input type="range" id="slider" min="0" value="0" aria-label="Hour of the year">
+          <input type="range" id="slider" min="0" value="0" data-i18n-aria="hour_label" aria-label="Hour of the year">
           <div class="read">
             <strong id="when"></strong>
             <span id="r-edu" class="edu"></span>
@@ -122,7 +126,7 @@
 
         <div class="tech-only">
           <h2 id="h-year" data-i18n="year_title">A year of light and signal</h2>
-          <canvas id="strips" role="img" aria-label="Sunlight and Earth visibility across the year"></canvas>
+          <canvas id="strips" role="img" data-i18n-aria="strips_label" aria-label="Sunlight and Earth visibility across the year"></canvas>
           <p class="note" data-i18n="year_note">Yellow: Sun visible (brighter = more of the disk). Blue: Earth in view. The white line is the selected hour. Click to jump to a time.</p>
         </div>
       </section>
@@ -130,14 +134,14 @@
       <div class="window card" id="window"></div>
 
       <div class="grid2 edu-only">
-        <div class="card fact"><div class="ico">📍</div><h3 data-i18n="k1_t">2 km can change everything</h3><p data-i18n="k1_p">On the rim of Shackleton crater the Sun is visible 85% of the year. Just 2 km inside the crater, it drops to 9%.</p></div>
+        <div class="card fact"><div class="ico">📍</div><h3 data-i18n="k1_t">2 km can change everything</h3><p data-i18n="k1_p">Mean solar illumination on the Shackleton rim is about 85%. In the team’s example, the Sun is visible only 9% of the year just 2 km inside the crater.</p></div>
         <div class="card fact"><div class="ico">🌙</div><h3 data-i18n="k2_t">Moon vs Earth</h3><p id="k2"></p></div>
       </div>
 
       <div class="overview-grid tech-only">
         <section aria-labelledby="h-facts">
           <h2 id="h-facts" data-i18n="facts_title">Whole year 2027</h2>
-          <p class="note" data-i18n="facts_note">Totals over all 8,760 hours. They change only when you pick another site.</p>
+          <p class="note" data-i18n="facts_note">Mean solar illumination averages the visible fraction of the Sun’s disk. An hour with Sun counts whenever any part of the disk is visible.</p>
           <dl id="facts" class="facts"></dl>
         </section>
         <section aria-labelledby="h-now">
@@ -151,6 +155,19 @@
         <h2 id="h-day" data-i18n="day_title">Selected day</h2>
         <label><span data-i18n="pick_day">Pick a day:</span> <input type="date" id="dia" min="2027-01-01" max="2027-12-31"></label>
         <dl id="day" class="facts"></dl>
+        <section class="date-comparison" aria-labelledby="compare-title">
+          <h3 id="compare-title" data-i18n="compare_dates">Compare two dates</h3>
+          <label><span data-i18n="other_date">Compare the selected day with</span>
+            <input type="date" id="compare-date" min="2027-01-01" max="2027-12-31">
+          </label>
+          <div class="scroll">
+            <table id="compare-table" hidden>
+              <caption></caption>
+              <thead><tr><th scope="col" data-i18n="metric">Indicator</th><th scope="col"></th><th scope="col"></th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
         <details>
           <summary data-i18n="hourly">Hour by hour (24 h)</summary>
           <div class="scroll">
@@ -170,7 +187,7 @@
         <h2 id="h-polar-map" data-i18n="map_title">South Pole Overview</h2>
         <p class="note" data-i18n="map_note">Lunar south pole map showing permanently shadowed regions (dark) and the four landing sites. Click a site to select it.</p>
         <div class="polar-map">
-          <img src="img/polo_sur.png" alt="Lunar south pole map showing permanently shadowed regions and landing sites" loading="lazy">
+          <img src="img/polo_sur.png" data-i18n-alt="polar_alt" alt="Lunar south pole map showing permanently shadowed regions and landing sites" loading="lazy">
           <button class="map-site label-down" data-id="cresta" style="left:48.14%; top:52.05%">
             <span class="map-dot"></span><span class="map-label">Shackleton–de Gerlache Ridge</span>
           </button>
@@ -193,7 +210,7 @@
             <thead>
               <tr>
                 <th scope="col" data-i18n="c_site">Site</th>
-                <th scope="col" data-i18n="c_sun">Sunlight</th>
+                <th scope="col" data-i18n="c_sun">Mean solar illumination</th>
                 <th scope="col" data-i18n="c_night">Longest night</th>
                 <th scope="col" data-i18n="c_earth">Earth in view</th>
                 <th scope="col" data-i18n="c_both">Sun and Earth</th>
@@ -246,6 +263,6 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-  <script src="app.js"></script>
+  <script src="app.js?v=20261115"></script>
 </body>
 </html>

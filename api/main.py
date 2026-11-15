@@ -18,11 +18,12 @@ _clima_cache = {"data": None, "ts": 0}
 
 from datetime import datetime, timedelta
 from typing import List, Dict, Any
-from pydantic import BaseModel
 
 import requests
 import numpy as np
 import rasterio
+from rasterio.warp import transform
+from rasterio.windows import Window
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -58,7 +59,6 @@ def _is_fresh(entry: Dict[str, Any]) -> bool:
 async def startup_event():
     # Force loading of rasters inside motor (lazy functions will cache internally)
     motor._cargar_80()  # type: ignore[attr-defined]
-    motor._load_5m_maps()  # type: ignore[attr-defined]
     return
 
 # ---------------------------------------------------------------------------
@@ -109,6 +109,7 @@ def analizar(
     lon_norm = ((lon + 180) % 360) - 180
     # Compute horizon with multi‑resolution engine
     h0, az_arr, hor_arr, resol = motor.horizonte_optimizado(lat, lon_norm)
+    az_arr, hor_arr = np.asarray(az_arr, dtype=float), np.asarray(hor_arr, dtype=float)
 
     # Load efemérides (cached) para Sol y Tierra
     fechas, saz, sel = _efemerides_cached(SOL, lat, lon_norm, h0)
@@ -126,17 +127,18 @@ def analizar(
         "lat": lat,
         "lon": lon,
         "altura_m": round(float(h0)),
-        "horizonte": hor_arr.tolist(),  # 360 valores
+        "horizonte": hor_arr.tolist(),  # Compatibilidad con los clientes que leen elevaciones.
+        "perfil_horizonte": {"az": az_arr.tolist(), "el": hor_arr.tolist()},
         "sol": {
-            "az": [round(x, 3) for x in saz],
-            "el": [round(x, 3) for x in sel],
+            "az": np.round(np.asarray(saz, dtype=float), 3).tolist(),
+            "el": np.round(np.asarray(sel, dtype=float), 3).tolist(),
             "frac": frac.tolist(),
             "hasta_puesta": horas_hasta_cambio(sol_vis := (frac > 0).tolist()),
             "hasta_salida": horas_hasta_cambio([not v for v in sol_vis]),
         },
         "tierra": {
-            "az": [round(x, 3) for x in taz],
-            "el": [round(x, 3) for x in tel],
+            "az": np.round(np.asarray(taz, dtype=float), 3).tolist(),
+            "el": np.round(np.asarray(tel, dtype=float), 3).tolist(),
             "visible": vis_t.tolist(),
             "hasta_puesta": horas_hasta_cambio(tie_vis := (vis_t > 0).tolist()),
             "hasta_salida": horas_hasta_cambio([not v for v in tie_vis]),
@@ -148,7 +150,7 @@ def analizar(
             "max_sin_tierra_h": racha_maxima([not v for v in tie_vis]),
             "sol_y_tierra_pct": round(float(np.mean(np.logical_and(sol_vis, tie_vis)) * 100), 1),
         },
-        "terreno": motor.terreno(lat, lon),
+        "terreno": motor.terreno(lat, lon_norm),
         "metadatos_cientificos": {
             "resolucion_cercana": resol,
             "incertidumbre_altura_rms_m": "0.30–0.50",
@@ -166,7 +168,8 @@ def clima_espacial() -> Dict[str, Any]:
     if _clima_cache["data"] is not None and now - _clima_cache["ts"] < 15 * 60:
         return _clima_cache["data"]
     result = obtener_clima_espacial()
-    _clima_cache = {"data": result, "ts": now}
+    if result["datos_completos"]:
+        _clima_cache = {"data": result, "ts": now}
     return result
 
 
@@ -182,51 +185,35 @@ def terreno_3d(
 ) -> Dict[str, Any]:
     # Normalizar longitud al rango -180..180 esperado por motor
     lon_norm = ((lon + 180) % 360) - 180
-    # Determine cuál raster usar (5 m si el punto está dentro de algún raster de 5 m, sino 80 m)
-    maps5 = motor._load_5m_maps()  # type: ignore[attr-defined]
-    path_lookup = {p.stem: p for p in motor.SITE_5M_FILES}
+    # Abrir las cabeceras en orden de resolución y leer solo la ventana elegida.
+    for path in [*motor.SITE_5M_FILES, motor.LDEM_80_PATH]:
+        with rasterio.open(path) as ds:
+            xs, ys = transform(motor.LUNA_CRS, ds.crs, [lon_norm], [lat])
+            row, col = ds.index(xs[0], ys[0])
+            if not (0 <= row < ds.height and 0 <= col < ds.width):
+                continue
 
-    chosen_z = chosen_tr = chosen_crs = None
-    chosen_res = 80
-    # Intentar primero los raster de 5 m
-    for name, (z, tr, crs) in maps5.items():
-        xo, yo = (np.array(v)[0] for v in rasterio.warp.transform(motor.LUNA_CRS, crs, [lon_norm], [lat]))
-        inv = ~tr
-        if 0 <= (inv @ (xo, yo))[0] < z.shape[1] - 1 and 0 <= (inv @ (xo, yo))[1] < z.shape[0] - 1:
-            chosen_z, chosen_tr, chosen_crs = z, tr, crs
-            chosen_res = 5
-            raster_path = path_lookup.get(name)
+            paso_m, paso_y = ds.res
+            rx = int(radio_km * 1000 / paso_m)
+            ry = int(radio_km * 1000 / paso_y)
+            left, top = max(0, col - rx), max(0, row - ry)
+            right, bottom = min(ds.width, col + rx + 1), min(ds.height, row + ry + 1)
+            window = Window(left, top, right - left, bottom - top)
+            band = ds.read(1, window=window, masked=True).astype(float)
+            elev = band.filled(np.nan) * ds.scales[0] + ds.offsets[0]
+            altura_centro_m = elev[row - top, col - left]
             break
-    if chosen_z is None:
-        chosen_z, chosen_tr, chosen_crs = motor._cargar_80()  # type: ignore[attr-defined]
-        chosen_res = 80
-        raster_path = Path(motor.LDEM_80_PATH)
+    else:
+        raise HTTPException(status_code=422, detail="El punto está fuera de los mapas disponibles.")
 
-    # Transformar lat/lon a coordenadas raster
-    x, y = (np.array(v)[0] for v in rasterio.warp.transform(motor.LUNA_CRS, chosen_crs, [lon_norm], [lat]))
-    col, row = chosen_tr * (x, y)
-    col, row = int(col), int(row)
-    pix_radius = int(radio_km * 1000 / chosen_res)
-    window = rasterio.windows.Window(col - pix_radius, row - pix_radius, 2 * pix_radius + 1, 2 * pix_radius + 1)
-    with rasterio.open(raster_path) as ds:
-        elev = ds.read(1, window=window).astype(float)
-        nodata = ds.nodata
-    if nodata is not None:
-        elev = np.where(elev == nodata, np.nan, elev)
-
-    # Calcular pendiente (gradiente) en grados
-    dzdx, dzdy = np.gradient(elev, chosen_res, chosen_res)
-    slope = np.degrees(np.arctan(np.sqrt(dzdx ** 2 + dzdy ** 2)))
-
-    # Aplanar arrays para JSON
-    elev_flat = [None if np.isnan(v) else float(v) for v in elev.ravel()]
-    slope_flat = [None if np.isnan(v) else float(v) for v in slope.ravel()]
-
-    # Metadatos de la cuadrícula
     ny, nx = elev.shape
-    paso_m = chosen_res
     ancho_m = nx * paso_m
-    altura_centro_m = elev[pix_radius, pix_radius] if 0 <= pix_radius < ny and 0 <= pix_radius < nx else np.nan
+    slope = np.full_like(elev, np.nan)
+    if nx > 1 and ny > 1:
+        dy, dx = np.gradient(elev, paso_y, paso_m)
+        slope = np.degrees(np.arctan(np.hypot(dx, dy)))
+    elev_flat = [float(v) if np.isfinite(v) else None for v in elev.ravel()]
+    slope_flat = [float(v) if np.isfinite(v) else None for v in slope.ravel()]
 
     # Vector dirección solar para la hora solicitada
     fechas, saz, sel = _efemerides_cached(SOL, lat, lon_norm, motor.horizonte_optimizado(lat, lon_norm)[0])
@@ -243,7 +230,7 @@ def terreno_3d(
         "ny": ny,
         "paso_m": paso_m,
         "ancho_m": ancho_m,
-        "altura_centro_m": None if np.isnan(altura_centro_m) else float(altura_centro_m),
+        "altura_centro_m": float(altura_centro_m) if np.isfinite(altura_centro_m) else None,
         "elevaciones": elev_flat,
         "pendientes": slope_flat,
         "sol_vec": sol_vec,
@@ -307,20 +294,18 @@ def contexto_mision(sitio: str = Query(...)) -> Dict[str, Any]:
     cache.save(cache_key, {"_ts": time.time(), "data": result})
     return result
 
-    # Endpoint: /api/sitios
-    @app.get("/api/sitios")
-    def sitios() -> List[Dict[str, Any]]:
-        """Read sitios.json from web/data and return its content."""
-        sitios_path = Path(__file__).resolve().parent.parent / "web" / "data" / "sitios.json"
-        try:
-            with open(sitios_path, "r", encoding="utf-8") as f:
-                data = json.load(f)
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Failed to load sitios data: {e}")
-        return data
-    # -------------------------------------------------
-# Mount static frontend (web/) at root URL
-# -------------------------------------------------
 web_dir = Path(__file__).resolve().parent.parent / "web"
+
+
+@app.get("/api/sitios")
+def sitios() -> Dict[str, Any]:
+    """Catálogo de sitios y metadatos temporales utilizados por el navegador."""
+    try:
+        with (web_dir / "data" / "sitios.json").open(encoding="utf-8") as catalogo:
+            return json.load(catalogo)
+    except (OSError, ValueError) as exc:
+        raise HTTPException(status_code=503, detail="El catálogo de sitios no está disponible.") from exc
+
+
 if web_dir.is_dir():
     app.mount("/", StaticFiles(directory=str(web_dir), html=True), name="web")

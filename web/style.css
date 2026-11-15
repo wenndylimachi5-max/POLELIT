@@ -185,7 +185,7 @@ input[type="date"]{background:var(--card);color:var(--texto);border:1px solid va
 .faq{background:var(--card);border:1px solid var(--card-b);border-radius:14px;padding:4px 18px;margin-top:10px}
 .faq summary{font-weight:700;padding:10px 0;list-style:none;display:flex;justify-content:space-between}
 .faq summary::after{content:"+";color:var(--accent2);font-size:1.3rem;line-height:1}
-.faq[open] summary::after{content:"â€“"}
+.faq[open] summary::after{content:"−"}
 .faq p{color:var(--suave);margin:0 0 14px}
 
 /* ===== Pie ===== */
@@ -239,3 +239,15 @@ input[type="date"]{background:var(--card);color:var(--texto);border:1px solid va
   .map-site{--sep:36px;--largo:22px}
   #polo-3d{height:320px}
 }
+
+/* Estado de carga y comparación diaria */
+[hidden]{display:none !important}
+.data-status{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:.75rem 0;color:var(--suave)}
+.goal-card:disabled{opacity:.55;cursor:wait}
+.date-comparison{margin:20px 0;padding:16px;border:1px solid var(--linea);border-radius:14px}
+.date-comparison h3{margin:0 0 8px}
+.date-comparison label{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+#compare-table{min-width:0;margin-top:12px;font-variant-numeric:tabular-nums}
+#compare-table caption{text-align:left;padding:0 0 6px;color:var(--suave)}
+#compare-table th,#compare-table td{white-space:normal;padding:8px}
+#compare-table tbody th{background:transparent}
