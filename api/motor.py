@@ -8,6 +8,8 @@ import rasterio
 from rasterio.warp import transform
 from pathlib import Path
 from typing import Tuple, Dict, Any
+from .descargar_datos import asegurar_ldem
+asegurar_ldem()
 
 # Importar funciones auxiliares del código existente
 from calculo.horizonte import _cargar as _cargar_80, _interp as _interp_80, _xyz as _xyz_80
