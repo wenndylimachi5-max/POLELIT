@@ -11,6 +11,11 @@ import json
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 import time
+from api.clima_espacial import obtener_clima_espacial
+
+# Simple in‑memory cache for the space‑weather endpoint (15 min TTL)
+_clima_cache = {"data": None, "ts": 0}
+
 from datetime import datetime, timedelta
 from typing import List, Dict, Any
 from pydantic import BaseModel
@@ -152,6 +157,17 @@ def analizar(
         },
     }
     return datos
+
+# Endpoint: /api/clima-espacial
+@app.get("/api/clima-espacial")
+def clima_espacial() -> Dict[str, Any]:
+    global _clima_cache
+    now = time.time()
+    if _clima_cache["data"] is not None and now - _clima_cache["ts"] < 15 * 60:
+        return _clima_cache["data"]
+    result = obtener_clima_espacial()
+    _clima_cache = {"data": result, "ts": now}
+    return result
 
 
 # ---------------------------------------------------------------------------
