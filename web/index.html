@@ -7,39 +7,106 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body data-mode="edu">
-  <header class="top">
-    <div>
-      <h1>Polelit</h1>
-      <p class="tag">Landing site navigator for the lunar south pole, year 2027</p>
+
+  <!-- ===== Menú fijo ===== -->
+  <nav class="nav">
+    <div class="nav-in">
+      <a class="brand" href="#top">☾ Polelit</a>
+      <div class="nav-links">
+        <a href="#about" data-i18n="nav_about">About</a>
+        <a href="#how" data-i18n="nav_how">How it works</a>
+        <a href="#sites" data-i18n="nav_sites">Sites</a>
+        <a href="#navigator" data-i18n="nav_nav">Navigator</a>
+        <a href="#faq" data-i18n="nav_faq">FAQ</a>
+      </div>
+      <div class="nav-tools">
+        <div class="seg" role="group" aria-label="Language">
+          <button type="button" data-lang="en" aria-pressed="true">EN</button>
+          <button type="button" data-lang="es" aria-pressed="false">ES</button>
+        </div>
+        <div class="seg mode" role="group" aria-label="Reading level">
+          <button type="button" data-mode="edu" aria-pressed="true" data-i18n="mode_edu">Educator view</button>
+          <button type="button" data-mode="tech" aria-pressed="false" data-i18n="mode_tech">Technical view</button>
+        </div>
+      </div>
     </div>
-    <div class="mode" role="group" aria-label="Reading level">
-      <button type="button" data-mode="edu" aria-pressed="true">Educator view</button>
-      <button type="button" data-mode="tech" aria-pressed="false">Technical view</button>
+  </nav>
+
+  <!-- ===== Portada ===== -->
+  <header class="hero" id="top">
+    <div class="hero-text">
+      <span class="kicker" data-i18n="hero_kicker">NASA Space Apps 2026 · Lunar Landing Site Navigator</span>
+      <h1 data-i18n-html="hero_title">Find where to <span class="hl">land</span> on the Moon's south pole</h1>
+      <p class="lead" data-i18n="hero_lead">See the Sun and the Earth over the real horizon of each landing site, hour by hour in 2027, to judge solar power and direct communication at a glance.</p>
+      <div class="hero-btns">
+        <a class="btn primary" href="#navigator" data-i18n="hero_open">Open navigator →</a>
+        <a class="btn ghost" href="https://github.com/wenndylimachi5-max/POLELIT" target="_blank" rel="noopener" data-i18n="hero_code">View code on GitHub</a>
+      </div>
+      <div class="stats">
+        <div><b>4</b><span data-i18n="stat_sites">south-pole sites</span></div>
+        <div><b>8,760</b><span data-i18n="stat_hours">hours simulated</span></div>
+        <div><b>88.2%</b><span data-i18n="stat_valid">vs 88.0% published</span></div>
+      </div>
+    </div>
+    <div class="hero-moon">
+      <canvas id="polo-3d" width="520" height="420" role="img" aria-label="Rotating Moon (illustrative)"></canvas>
+      <p class="note" data-i18n="moon_note">Illustrative image · Drag to rotate</p>
     </div>
   </header>
 
   <main>
-    <div id="vista-edu">
-      <section class="intro-hero edu-only">
-        <h2>Why is it so hard to choose where to land?</h2>
-        <p>Near the Lunar South Pole, tall peaks catch almost continuous sunlight while deep craters stay frozen in permanent shadow—trapping water ice.</p>
-      </section>
 
-      <div id="mapa-3d" class="edu-only">
-
-        <canvas id="polo-3d" width="760" height="320" role="img" aria-label="Interactive Lunar South Pole"></canvas>
-        <p class="note">Illustrative image · Drag to rotate · Bright ridges get sunlight; deep craters stay in permanent shadow.</p>
+    <!-- ===== Por qué ===== -->
+    <section id="about" class="block">
+      <span class="kicker" data-i18n="about_kicker">Why it matters</span>
+      <h2 data-i18n="about_title">Why is it so hard to choose where to land?</h2>
+      <p class="lead small" data-i18n="about_lead">At the lunar south pole the Sun never rises high. A nearby mountain can leave a site in darkness for days, and the Earth, needed for direct communication, keeps hiding behind the horizon. Deep craters stay in permanent shadow and may trap water ice.</p>
+      <div class="grid3">
+        <div class="card feat"><div class="ico">🏔️</div><h3 data-i18n="f1_t">Real horizon</h3><p data-i18n="f1_p">360° horizon computed from NASA LOLA elevation maps, including the curvature of the Moon. No atmosphere: only terrain blocks the view.</p></div>
+        <div class="card feat"><div class="ico">🛰️</div><h3 data-i18n="f2_t">NASA ephemerides</h3><p data-i18n="f2_p">Sun and Earth positions from JPL Horizons, every hour of 2027. Libration is included.</p></div>
+        <div class="card feat"><div class="ico">✔️</div><h3 data-i18n="f3_t">Validated</h3><p data-i18n="f3_p">Average sunlight on the Shackleton–de Gerlache ridge: 88.2% (ours) vs 88.0% (Gläser et al. 2017).</p></div>
       </div>
+    </section>
 
-      <!-- Selector de los 4 sitios (se llena desde sitios.json) -->
+    <!-- ===== Cómo funciona ===== -->
+    <section id="how" class="block">
+      <span class="kicker" data-i18n="how_kicker">How it works</span>
+      <h2 data-i18n="how_title">Three steps to evaluate a site</h2>
+      <div class="steps">
+        <div class="step"><span class="num">1</span><h3 data-i18n="s1_t">Choose a site</h3><p data-i18n="s1_p">Pick one of four south-pole landing sites, or let the tool recommend one for your mission.</p></div>
+        <div class="step"><span class="num">2</span><h3 data-i18n="s2_t">Choose a date</h3><p data-i18n="s2_p">Move through 2027 hour by hour, press Play, or pick a landing day.</p></div>
+        <div class="step"><span class="num">3</span><h3 data-i18n="s3_t">Read the results</h3><p data-i18n="s3_p">Sun and Earth over the horizon, time to sunset and Earthset, slope and nearby permanent shadow.</p></div>
+      </div>
+    </section>
+
+    <!-- ===== Prioridad y sitios ===== -->
+    <section id="sites" class="block">
+      <span class="kicker" data-i18n="sites_kicker">Mission planner</span>
+      <h2 data-i18n="sites_title">What does your mission need most?</h2>
+      <div class="goal-grid" role="group" aria-label="Mission priority">
+        <button type="button" class="goal-card" data-goal="energy" aria-pressed="true"><span class="goal-top">☀️ <span data-i18n="g_energy">Energy</span></span><span class="goal-sub" data-i18n="g_energy_s">Most sunlight for solar panels</span></button>
+        <button type="button" class="goal-card" data-goal="comm" aria-pressed="false"><span class="goal-top">🌍 <span data-i18n="g_comm">Communication</span></span><span class="goal-sub" data-i18n="g_comm_s">Earth in view most of the time</span></button>
+        <button type="button" class="goal-card" data-goal="both" aria-pressed="false"><span class="goal-top">⚖️ <span data-i18n="g_both">Balanced</span></span><span class="goal-sub" data-i18n="g_both_s">Sun and Earth at the same time</span></button>
+      </div>
+      <div class="reco" id="reco"></div>
+      <div class="site-cards" id="site-cards"></div>
+      <p class="note" data-i18n="tags_note">Tags use simple thresholds chosen by the team: green = good, amber = fair, red = poor.</p>
+    </section>
+
+    <!-- ===== Navegador ===== -->
+    <section id="navigator" class="block">
+      <span class="kicker" data-i18n="nav_kicker">Navigator</span>
+      <h2 id="site-title"></h2>
       <div id="site-buttons" class="site-pills"></div>
 
+      <div class="verdict" id="verdict"></div>
+
       <section class="panel" aria-labelledby="h-sky">
-        <h2 id="h-sky">View from the lander</h2>
+        <h2 id="h-sky" data-i18n="sky_title">View from the lander</h2>
         <canvas id="sky" role="img" aria-label="Horizon panorama with the Sun and Earth at the selected hour"></canvas>
-        <p class="note">The grey ground is the horizon seen from this site, all 360 degrees. Heights are stretched so small hills show up.</p>
+        <p class="note" data-i18n="sky_note">The grey ground is the horizon seen from this site, all 360 degrees. Heights are stretched so small hills show up.</p>
         <div class="controls">
-          <button type="button" id="play">Play</button>
+          <button type="button" id="play" data-i18n="play">Play</button>
           <input type="range" id="slider" min="0" value="0" aria-label="Hour of the year">
           <div class="read">
             <strong id="when"></strong>
@@ -48,105 +115,133 @@
           </div>
         </div>
 
+        <div class="countdown edu-only">
+          <div class="cd sun"><span class="cd-ico">☀️</span><span id="cd-sun"></span></div>
+          <div class="cd earth"><span class="cd-ico">🌍</span><span id="cd-earth"></span></div>
+        </div>
+
         <div class="tech-only">
-          <h2 id="h-year">A year of light and signal</h2>
+          <h2 id="h-year" data-i18n="year_title">A year of light and signal</h2>
           <canvas id="strips" role="img" aria-label="Sunlight and Earth visibility across the year"></canvas>
-          <p class="note">Brighter means more of the Sun, or Earth, is in view. Click or drag to jump to a time.</p>
+          <p class="note" data-i18n="year_note">Yellow: Sun visible (brighter = more of the disk). Blue: Earth in view. The white line is the selected hour. Click to jump to a time.</p>
         </div>
       </section>
-        <div class="overview-grid tech-only">
+
+      <div class="window card" id="window"></div>
+
+      <div class="grid2 edu-only">
+        <div class="card fact"><div class="ico">📍</div><h3 data-i18n="k1_t">2 km can change everything</h3><p data-i18n="k1_p">On the rim of Shackleton crater the Sun is visible 85% of the year. Just 2 km inside the crater, it drops to 9%.</p></div>
+        <div class="card fact"><div class="ico">🌙</div><h3 data-i18n="k2_t">Moon vs Earth</h3><p id="k2"></p></div>
+      </div>
+
+      <div class="overview-grid tech-only">
         <section aria-labelledby="h-facts">
+          <h2 id="h-facts" data-i18n="facts_title">Whole year 2027</h2>
+          <p class="note" data-i18n="facts_note">Totals over all 8,760 hours. They change only when you pick another site.</p>
+          <dl id="facts" class="facts"></dl>
+        </section>
+        <section aria-labelledby="h-now">
+          <h2 id="h-now" data-i18n="now_title">Selected moment</h2>
+          <p class="note" id="now-when"></p>
+          <dl id="now" class="facts"></dl>
+        </section>
+      </div>
 
-  <h2 id="h-facts">Whole year 2027</h2>
-  <p class="note">Totals over all 8,760 hours. They change only when you pick another site.</p>
-  <dl id="facts" class="facts"></dl>
-</section>
+      <section class="tech-only" aria-labelledby="h-day">
+        <h2 id="h-day" data-i18n="day_title">Selected day</h2>
+        <label><span data-i18n="pick_day">Pick a day:</span> <input type="date" id="dia" min="2027-01-01" max="2027-12-31"></label>
+        <dl id="day" class="facts"></dl>
+        <details>
+          <summary data-i18n="hourly">Hour by hour (24 h)</summary>
+          <div class="scroll">
+            <table id="hours">
+              <thead><tr><th data-i18n="th_hour">Hour (UTC)</th><th data-i18n="th_sunlit">Sun lit</th><th data-i18n="th_sunel">Sun elevation</th><th data-i18n="th_earth">Earth in view</th><th data-i18n="th_earthel">Earth elevation</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </details>
+        <div class="actions">
+          <button type="button" class="btn small" id="dl-day" data-i18n="dl_day">Download this day (.txt)</button>
+          <button type="button" class="btn small" id="dl-year" data-i18n="dl_year">Download full year (.txt)</button>
+        </div>
+      </section>
 
-<section aria-labelledby="h-now">
-  <h2 id="h-now">Selected moment</h2>
-  <p class="note" id="now-when"></p>
-  <dl id="now" class="facts"></dl>
-</section>
-</div>
-<section class="tech-only" aria-labelledby="h-day">
-  <h2 id="h-day">Selected day</h2>
-  <label>Pick a day: <input type="date" id="dia" min="2027-01-01" max="2027-12-31"></label>
-  <dl id="day" class="facts"></dl>
-  <details>
-    <summary>Hour by hour (24 h)</summary>
-    <div class="scroll">
-      <table id="hours">
-        <thead><tr><th>Hour (UTC)</th><th>Sun lit</th><th>Sun elevation</th><th>Earth in view</th><th>Earth elevation</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </details>
-  <div class="actions">
-    <button type="button" id="dl-day">Download this day (.txt)</button>
-    <button type="button" id="dl-year">Download full year (.txt)</button>
-  </div>
-</section>
-     <section class="technical-map" aria-labelledby="h-polar-map">
-    <h2 id="h-polar-map">South Pole Overview</h2>
+      <section class="technical-map" aria-labelledby="h-polar-map">
+        <h2 id="h-polar-map" data-i18n="map_title">South Pole Overview</h2>
+        <p class="note" data-i18n="map_note">Lunar south pole map showing permanently shadowed regions (dark) and the four landing sites. Click a site to select it.</p>
+        <div class="polar-map">
+          <img src="img/polo_sur.png" alt="Lunar south pole map showing permanently shadowed regions and landing sites" loading="lazy">
+          <button class="map-site label-down" data-id="cresta" style="left:48.14%; top:52.05%">
+            <span class="map-dot"></span><span class="map-label">Shackleton–de Gerlache Ridge</span>
+          </button>
+          <button class="map-site label-right" data-id="shackleton" style="left:49.61%; top:50.98%">
+            <span class="map-dot"></span><span class="map-label">Shackleton Rim</span>
+          </button>
+          <button class="map-site label-left" data-id="degerlache" style="left:43.85%; top:47.56%">
+            <span class="map-dot"></span><span class="map-label">de Gerlache Rim</span>
+          </button>
+          <button class="map-site label-right" data-id="malapert" style="left:50.59%; top:29.98%">
+            <span class="map-dot"></span><span class="map-label">Malapert Massif</span>
+          </button>
+        </div>
+      </section>
 
-
-    <p class="note">
-        Lunar south pole map showing permanently shadowed regions
-        and selected landing sites.
-    </p>
-   <div class="polar-map">
-    <img
-        src="img/polo_sur.png"
-        alt="Lunar south pole map showing permanently shadowed regions and landing sites"
-        loading="lazy"
-    >
-
-    <button class="map-site label-down" data-id="cresta"
-        style="left:48.14%; top:52.05%">
-        <span class="map-dot"></span>
-        <span class="map-label">Shackleton–de Gerlache Ridge</span>
-    </button>
-
-    <button class="map-site label-right" data-id="shackleton"
-        style="left:49.61%; top:50.98%">
-        <span class="map-dot"></span>
-        <span class="map-label">Shackleton Rim</span>
-    </button>
-
-    <button class="map-site label-left" data-id="degerlache"
-        style="left:43.85%; top:47.56%">
-        <span class="map-dot"></span>
-        <span class="map-label">de Gerlache Rim</span>
-    </button>
-
-    <button class="map-site label-right" data-id="malapert"
-        style="left:50.59%; top:29.98%">
-        <span class="map-dot"></span>
-        <span class="map-label">Malapert Massif</span>
-    </button>
-</div>
-</section>
       <section class="tech-only" aria-labelledby="h-cmp">
-        <h2 id="h-cmp">Compare the sites</h2>
+        <h2 id="h-cmp" data-i18n="cmp_title">Compare the sites</h2>
         <div class="scroll">
           <table id="cmp">
             <thead>
               <tr>
-                <th scope="col">Site</th>
-                <th scope="col">Sunlight</th>
-                <th scope="col">Longest night</th>
-                <th scope="col">Earth in view</th>
-                <th scope="col">Sun and Earth</th>
-                <th scope="col">Distance to shadow</th>
-                <th scope="col">Slope</th>
+                <th scope="col" data-i18n="c_site">Site</th>
+                <th scope="col" data-i18n="c_sun">Sunlight</th>
+                <th scope="col" data-i18n="c_night">Longest night</th>
+                <th scope="col" data-i18n="c_earth">Earth in view</th>
+                <th scope="col" data-i18n="c_both">Sun and Earth</th>
+                <th scope="col" data-i18n="c_shadow">Distance to shadow</th>
+                <th scope="col" data-i18n="c_slope">Slope</th>
               </tr>
             </thead>
             <tbody></tbody>
           </table>
         </div>
+        <p class="note" data-i18n="cmp_note">Green = best value in each column. Slope is the average within 50 m of the site.</p>
       </section>
-    </div>
+    </section>
+
+    <!-- ===== Preguntas frecuentes ===== -->
+    <section id="faq" class="block">
+      <span class="kicker" data-i18n="faq_kicker">FAQ</span>
+      <h2 data-i18n="faq_title">Common questions</h2>
+      <details class="faq"><summary data-i18n="q1">Where does the data come from?</summary><p data-i18n="a1">Sun and Earth positions come from NASA JPL Horizons, every hour of 2027. The terrain comes from LOLA elevation maps (Lunar Orbiter Laser Altimeter) published by NASA PGDA: an 80 m map for the horizon, 5 m maps for slope and a 20 m map of permanent shadows.</p></details>
+      <details class="faq"><summary data-i18n="q2">Why 2 meters above the ground?</summary><p data-i18n="a2">That is the typical height of a lander's solar panels, the same height used in the reference study by Gläser et al. (2017).</p></details>
+      <details class="faq"><summary data-i18n="q3">What is a permanently shadowed region?</summary><p data-i18n="a3">A place, usually inside a crater, that never receives direct sunlight. They are extremely cold and may hold water ice, one of the main reasons to explore the south pole.</p></details>
+      <details class="faq"><summary data-i18n="q4">Why is the lunar sky black even in daylight?</summary><p data-i18n="a4">The Moon has no atmosphere to scatter sunlight. For the same reason there is no refraction: the horizon is set only by the terrain and the curvature of the Moon.</p></details>
+      <details class="faq"><summary data-i18n="q5">How accurate is it?</summary><p data-i18n="a5">Average sunlight on the ridge is 88.2% vs 88.0% published by Gläser et al. (2017), and the longest night on the Shackleton rim is 64 h vs 65 h. Differences remain because we simulate one year (2027) with an 80 m map, while the paper averages 20 years with finer maps.</p></details>
+    </section>
   </main>
+
+  <!-- ===== Pie ===== -->
+  <footer class="foot">
+    <div class="foot-in">
+      <div>
+        <div class="brand">☾ Polelit</div>
+        <p class="note" data-i18n="foot_name">Pole + lit: "the lit pole". Team from Buenos Aires, NASA Space Apps Challenge 2026.</p>
+        <p class="note">Wenndy Limachi · Gerónimo Belfiori · Luis Loayza</p>
+      </div>
+      <div>
+        <h4 data-i18n="foot_data">Data sources</h4>
+        <a href="https://ssd.jpl.nasa.gov/horizons/" target="_blank" rel="noopener">JPL Horizons (NASA/JPL)</a>
+        <a href="https://pgda.gsfc.nasa.gov/products/90" target="_blank" rel="noopener">LOLA south pole maps (NASA PGDA)</a>
+        <a href="https://pgda.gsfc.nasa.gov/products/78" target="_blank" rel="noopener">LOLA 5 m site maps (NASA PGDA)</a>
+        <a href="https://ntrs.nasa.gov/api/citations/20170007365/downloads/20170007365.pdf" target="_blank" rel="noopener">Gläser et al. 2017 (validation)</a>
+      </div>
+      <div>
+        <h4 data-i18n="foot_proj">Project</h4>
+        <a href="https://github.com/wenndylimachi5-max/POLELIT" target="_blank" rel="noopener">GitHub</a>
+        <p class="note" data-i18n="foot_ai">Built with the help of AI tools (Claude). Not an official NASA product.</p>
+      </div>
+    </div>
+  </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="app.js"></script>
